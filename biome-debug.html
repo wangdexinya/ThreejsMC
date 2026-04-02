@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biome Debug Map</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{background:#0a0a0f;color:#e0e0e0;display:flex;font-family:Segoe UI,system-ui,sans-serif;height:100vh;overflow:hidden}#sidebar{background:#12121a;border-right:1px solid #2a2a3a;display:flex;flex-direction:column;gap:16px;min-width:280px;overflow-y:auto;padding:20px 16px;width:280px}#sidebar h1{color:#fff;font-size:18px;font-weight:700;margin-bottom:4px}#sidebar h1 span{color:#888;display:block;font-size:11px;font-weight:400;margin-top:2px}.panel-section{background:#1a1a28;border-radius:8px;padding:12px}.panel-section h3{color:#888;font-size:11px;letter-spacing:1px;margin-bottom:10px;text-transform:uppercase}.control-row{align-items:center;display:flex;justify-content:space-between;margin-bottom:8px}.control-row:last-child{margin-bottom:0}.control-row label{color:#ccc;font-size:13px}.control-row input[type=number]{background:#0e0e18;border:1px solid #333;border-radius:4px;color:#fff;font-size:13px;padding:4px 8px;text-align:right;width:80px}.control-row input[type=range]{accent-color:#6c7bff;width:120px}.control-row .value-display{color:#6c7bff;font-size:12px;min-width:36px;text-align:right}.mode-group{display:flex;gap:4px}.mode-btn{background:#0e0e18;border:1px solid #333;border-radius:4px;color:#aaa;cursor:pointer;flex:1;font-size:11px;padding:6px 4px;text-align:center;transition:all .15s}.mode-btn.active,.mode-btn:hover{border-color:#6c7bff;color:#fff}.mode-btn.active{background:#6c7bff}.legend-item{align-items:center;display:flex;font-size:13px;gap:8px;margin-bottom:6px}.legend-color{border:1px solid hsla(0,0%,100%,.15);border-radius:3px;flex-shrink:0;height:16px;width:16px}#canvas-area{flex:1;position:relative}#map-canvas{cursor:grab;display:block;height:100%;width:100%}#map-canvas:active{cursor:grabbing}#tooltip{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);background:rgba(10,10,20,.92);border:1px solid #444;border-radius:6px;color:#ddd;display:none;font-size:12px;line-height:1.6;padding:8px 12px;pointer-events:none;position:absolute;z-index:10}#tooltip .tt-biome{color:#fff;font-size:14px;font-weight:600}#status-bar{background:rgba(10,10,20,.8);border-radius:4px;bottom:12px;color:#666;font-size:11px;left:12px;padding:4px 10px;position:absolute}.hint{color:#555;font-size:11px;margin-top:auto;padding-top:8px;text-align:center}.hint kbd{background:#222;border:1px solid #444;border-radius:3px;color:#aaa;font-family:monospace;padding:1px 5px}</style>
+  <script type="module" crossorigin src="/Third-Person-MC/assets/biomeDebug-D5Sml6ra.js"></script>
+  <link rel="modulepreload" crossorigin href="/Third-Person-MC/assets/biome-generator-C2-Y-62T.js">
+  <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script>
+  <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
+</head>
+<body>
+
+  <!-- Sidebar controls -->
+  <div id="sidebar">
+    <h1>🗺️ Biome Map <span>Debug Visualization</span></h1>
+
+    <div class="panel-section">
+      <h3>Seed</h3>
+      <div class="control-row">
+        <label>World Seed</label>
+        <input type="number" id="ctrl-seed" value="12345" />
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Noise Parameters</h3>
+      <div class="control-row">
+        <label>Temp Scale</label>
+        <input type="range" id="ctrl-temp-scale" min="50" max="800" value="200" />
+        <span class="value-display" id="val-temp-scale">200</span>
+      </div>
+      <div class="control-row">
+        <label>Humidity Scale</label>
+        <input type="range" id="ctrl-humidity-scale" min="50" max="800" value="200" />
+        <span class="value-display" id="val-humidity-scale">200</span>
+      </div>
+      <div class="control-row">
+        <label>Transition</label>
+        <input type="range" id="ctrl-transition" min="0" max="50" value="15" />
+        <span class="value-display" id="val-transition">0.15</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Display Mode</h3>
+      <div class="mode-group">
+        <button class="mode-btn active" data-mode="biome">Biome</button>
+        <button class="mode-btn" data-mode="temperature">Temp</button>
+        <button class="mode-btn" data-mode="humidity">Humidity</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3>Legend</h3>
+      <div id="legend"></div>
+    </div>
+
+    <div class="hint">
+      <kbd>R</kbd> reset view &nbsp; <kbd>Scroll</kbd> zoom &nbsp; <kbd>Drag</kbd> pan
+    </div>
+  </div>
+
+  <!-- Canvas area -->
+  <div id="canvas-area">
+    <canvas id="map-canvas"></canvas>
+    <div id="tooltip"></div>
+    <div id="status-bar"></div>
+  </div>
+
+  <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+  <script nomodule crossorigin id="vite-legacy-polyfill" src="/Third-Person-MC/assets/polyfills-legacy-BVsOsB0h.js"></script>
+  <script nomodule crossorigin id="vite-legacy-entry" data-src="/Third-Person-MC/assets/biomeDebug-legacy-D3ePL48O.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+</body>
+</html>
