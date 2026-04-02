@@ -21,12 +21,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: pnpm
+          cache: npm
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
+      - name: Install pnpm globally
+        run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install
@@ -39,4 +37,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          cname: # 可选：如果您有自定义域名，可以在这里设置
